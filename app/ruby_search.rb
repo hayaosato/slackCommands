@@ -18,8 +18,24 @@ class Crawl
     @snippet = ''
   end
 
-  def ruby_search( index_word )
+  def get_status_code( index_word )
     @url = "http://rurema.clear-code.com/query:#{index_word}"
+    begin
+      status_code = @agent.get(@url).code.to_i
+      if status_code == 200
+        ruby_search( index_word )
+      else
+        text = "見つかりませんでした。検索条件を変えてみませんか？"
+        return text
+      end
+    rescue Mechanize::ResponseCodeError => error
+      text = "見つかりませんでした。検索条件を変えてみませんか？"
+      return text
+    end
+
+  end
+
+  def ruby_search( index_word )
     # sleep(3)
     page = @agent.get(@url)
     entries = page.css('dl.entries')
@@ -46,3 +62,6 @@ class Crawl
     return text
   end
 end
+
+craw = Crawl.new
+craw.get_status_code( 'Array' )

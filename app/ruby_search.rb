@@ -11,9 +11,8 @@ class Crawl
     @agent = Mechanize.new
     @agent.user_agent_alias = 'Mac Mozilla'
     @title = ''
-    #@versions = ''
-    @versions = []
-    @types = []
+    @versions = 'Rubyバージョン:  '
+    @types = '種類:  '
     @summary = ''
     @snippet = ''
   end
@@ -45,20 +44,27 @@ class Crawl
     document = entries.css('dd')[0]
     entry_links = document.css('ul.entry-links')
     entry_links.css('a').each do |version|
-      @versions.push(version.text)
+      @versions += version
+      @versions += ', '
     end
+    @versions = @versions.gsub(/,\s$/, '')
 
     entry_metadata = document.css('ul.entry-metadata')
     entry_metadata.css('a').each do |type|
-      @types.push(type.text)
+      @types += type.text
+      @types += ', '
     end
+    @types = @types.gsub(/,\s$/, '')
 
     entry_summary = document.css('div.entry-summary')
     @summary = entry_summary.css('p').text
 
-    entry_snippet = document.css('div.entry-snippets')
-    @snippet = entry_snippet.css('div.snippet').text
-    text = "#{@title}\n#{@versions}\n#{@types}\n#{@summary}\n```\n#{@snippet}```"
+    document.css('div.entry-snippets').each do | entry_snippet |
+      @snippet += "```\n"
+      @snippet += entry_snippet.css('div.snippet').text
+      @snippet += "```\n"
+    end
+    text = "#{@title}\n#{@versions}\n#{@types}\n#{@summary}\n#{@snippet}"
     return text
   end
 end

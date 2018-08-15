@@ -11,8 +11,8 @@ class Crawl
     @agent = Mechanize.new
     @agent.user_agent_alias = 'Mac Mozilla'
     @title = ''
-    @versions = 'Rubyバージョン:  '
-    @types = '種類:  '
+    @versions = '`Rubyバージョン`:  '
+    @types = '`種類`:  '
     @summary = ''
     @snippet = ''
   end
@@ -57,14 +57,14 @@ class Crawl
     @types = @types.gsub(/,\s$/, '')
 
     entry_summary = document.css('div.entry-summary')
-    @summary = entry_summary.css('p').text
+    @summary = entry_summary.css('p').text.gsub("\n", '')
 
     document.css('div.entry-snippets').each do | entry_snippet |
       @snippet += "```\n"
       @snippet += entry_snippet.css('div.snippet').text
       @snippet += "```\n"
     end
-    text = "#{@title}\n#{@versions}\n#{@types}\n#{@summary}\n#{@snippet}"
+    text = "*#{@title}*\n#{@versions}\n#{@types}\n#{@summary}\n#{@snippet}"
     return text
   end
 end
